@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Meal, mealApi } from '../api';
-import { LoadingSpinner } from '../common';
 import styles from './SearchView.module.css';
 
 interface SearchViewProps {
@@ -164,7 +163,9 @@ const SearchView: React.FC<SearchViewProps> = ({ searchQuery = '' }) => {
       </div>
 
       {loading && (
-        <LoadingSpinner message="Searching..." />
+        <div className={styles.loading}>
+          <p>Searching...</p>
+        </div>
       )}
 
       {error && (

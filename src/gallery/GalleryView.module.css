@@ -170,7 +170,6 @@
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
-/* 响应式列数调整 */
 @media (min-width: 1200px) {
   .gallery {
     grid-template-columns: repeat(4, 1fr);
@@ -267,44 +266,6 @@
   backdrop-filter: blur(10px);
 }
 
-/* 列表视图样式 */
-.listView .mealCard {
-  display: flex;
-  flex-direction: row;
-}
-
-.listView .mealImage {
-  width: 150px;
-  height: 150px;
-  flex-shrink: 0;
-}
-
-.listView .mealOverlay {
-  position: static;
-  background: white;
-  color: #333;
-  padding: 20px;
-  transform: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  flex: 1;
-}
-
-.listView .mealCard:hover .mealOverlay {
-  transform: none;
-}
-
-.listView .category,
-.listView .area {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-.listView .area {
-  background: #f3e5f5;
-  color: #7b1fa2;
-}
 
 @media (max-width: 768px) {
   .galleryView {
@@ -339,12 +300,4 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
   
-  .listView .mealCard {
-    flex-direction: column;
-  }
-  
-  .listView .mealImage {
-    width: 100%;
-    height: 200px;
-  }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import 'normalize.css';
-import { ErrorBoundary, Navigation } from './common/index';
+import { Navigation } from './common/index';
 import SearchView from './search/index';
 import GalleryView from './gallery/index';
 import MealDetail from './meal/index';
@@ -9,18 +9,16 @@ import './App.css';
 
 function App() {
   return (
-    <ErrorBoundary>
-      <div className="App">
-        <Navigation />
-        <main>
-          <Routes>
-            <Route path="/" element={<SearchView />} />
-            <Route path="/gallery" element={<GalleryView />} />
-            <Route path="/meal/:id" element={<MealDetail />} />
-          </Routes>
-        </main>
-      </div>
-    </ErrorBoundary>
+    <div className="App">
+      <Navigation />
+      <main>
+        <Routes>
+          <Route path="/" element={<SearchView />} />
+          <Route path="/gallery" element={<GalleryView />} />
+          <Route path="/meal/:id" element={<MealDetail />} />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
