@@ -31,6 +31,17 @@ const GalleryView: React.FC = () => {
     loadFilterData();
   }, []);
 
+  // 获取详细菜品信息的通用函数
+  const getDetailedMeals = async (meals: Meal[]): Promise<Meal[]> => {
+    const detailedMeals = await Promise.all(
+      meals.map(async (meal: Meal) => {
+        const fullMeal = await mealApi.getMealById(meal.idMeal);
+        return fullMeal || meal;
+      })
+    );
+    return detailedMeals.filter(meal => meal !== null) as Meal[];
+  };
+
   const loadMealsByFilters = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -56,14 +67,7 @@ const GalleryView: React.FC = () => {
           const meals = await mealApi.filterByCategory(category);
           
           if (meals.length > 0) {
-            const detailedMeals = await Promise.all(
-              meals.map(async (meal: Meal) => {
-                const fullMeal = await mealApi.getMealById(meal.idMeal);
-                return fullMeal || meal;
-              })
-            );
-            
-            allMeals = detailedMeals;
+            allMeals = await getDetailedMeals(meals);
             
             if (selectedAreas.length > 0) {
               allMeals = allMeals.filter(meal => 
@@ -76,14 +80,7 @@ const GalleryView: React.FC = () => {
           const meals = await mealApi.filterByArea(area);
           
           if (meals.length > 0) {
-            const detailedMeals = await Promise.all(
-              meals.map(async (meal: Meal) => {
-                const fullMeal = await mealApi.getMealById(meal.idMeal);
-                return fullMeal || meal;
-              })
-            );
-            
-            allMeals = detailedMeals;
+            allMeals = await getDetailedMeals(meals);
           }
         }
       }
@@ -105,20 +102,20 @@ const GalleryView: React.FC = () => {
     return () => clearTimeout(timeoutId);
   }, [loadMealsByFilters]);
 
-  const handleCategoryToggle = (category: string) => {
-    setSelectedCategories(prev => 
-      prev.includes(category) 
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
-    );
-  };
-
-  const handleAreaToggle = (area: string) => {
-    setSelectedAreas(prev => 
-      prev.includes(area) 
-        ? prev.filter(a => a !== area)
-        : [...prev, area]
-    );
+  const handleFilterToggle = (type: 'category' | 'area', value: string) => {
+    if (type === 'category') {
+      setSelectedCategories(prev => 
+        prev.includes(value) 
+          ? prev.filter(c => c !== value)
+          : [...prev, value]
+      );
+    } else {
+      setSelectedAreas(prev => 
+        prev.includes(value) 
+          ? prev.filter(a => a !== value)
+          : [...prev, value]
+      );
+    }
   };
 
   const clearFilters = () => {
@@ -130,7 +127,6 @@ const GalleryView: React.FC = () => {
     navigate(`/meal/${meal.idMeal}`);
   };
 
-  const filteredMeals = meals;
 
   return (
     <div className={styles.galleryView}>
@@ -146,7 +142,7 @@ const GalleryView: React.FC = () => {
               <button
                 key={category}
                 className={`${styles.filterTag} ${selectedCategories.includes(category) ? styles.selected : ''}`}
-                onClick={() => handleCategoryToggle(category)}
+                onClick={() => handleFilterToggle('category', category)}
               >
                 {category}
               </button>
@@ -161,7 +157,7 @@ const GalleryView: React.FC = () => {
               <button
                 key={area}
                 className={`${styles.filterTag} ${selectedAreas.includes(area) ? styles.selected : ''}`}
-                onClick={() => handleAreaToggle(area)}
+                onClick={() => handleFilterToggle('area', area)}
               >
                 {area}
               </button>
@@ -174,7 +170,7 @@ const GalleryView: React.FC = () => {
             Clear Filters
           </button>
           <span className={styles.resultCount}>
-            Showing {filteredMeals.length} results
+            Showing {meals.length} results
           </span>
         </div>
       </div>
@@ -192,15 +188,15 @@ const GalleryView: React.FC = () => {
         </div>
       )}
 
-      {!loading && !error && filteredMeals.length === 0 && (
+      {!loading && !error && meals.length === 0 && (
         <div className={styles.noResults}>
           <p>No meals found matching your criteria</p>
         </div>
       )}
 
-      {filteredMeals.length > 0 && (
+      {meals.length > 0 && (
         <div className={styles.gallery}>
-          {filteredMeals.map((meal) => (
+          {meals.map((meal) => (
             <div
               key={meal.idMeal}
               className={styles.mealCard}

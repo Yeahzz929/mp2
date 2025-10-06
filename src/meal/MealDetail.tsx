@@ -25,7 +25,6 @@ const MealDetail: React.FC = () => {
       const mealData = await mealApi.getMealById(mealId);
       if (mealData) {
         setMeal(mealData);
-        // 加载同分类的其他餐点用于导航
         const categoryMeals = await mealApi.filterByCategory(mealData.strCategory);
         setAllMeals(categoryMeals);
         setCurrentIndex(categoryMeals.findIndex((m: Meal) => m.idMeal === mealId));
@@ -40,25 +39,22 @@ const MealDetail: React.FC = () => {
     }
   };
 
-  const handlePrevious = () => {
+  const navigateToMeal = (direction: 'prev' | 'next') => {
     if (allMeals.length > 0) {
-      const prevIndex = currentIndex > 0 ? currentIndex - 1 : allMeals.length - 1;
-      const prevMeal = allMeals[prevIndex];
-      setCurrentIndex(prevIndex);
-      navigate(`/meal/${prevMeal.idMeal}`);
+      const newIndex = direction === 'prev' 
+        ? (currentIndex > 0 ? currentIndex - 1 : allMeals.length - 1)
+        : (currentIndex < allMeals.length - 1 ? currentIndex + 1 : 0);
+      const targetMeal = allMeals[newIndex];
+      setCurrentIndex(newIndex);
+      navigate(`/meal/${targetMeal.idMeal}`);
     }
   };
 
-  const handleNext = () => {
-    if (allMeals.length > 0) {
-      const nextIndex = currentIndex < allMeals.length - 1 ? currentIndex + 1 : 0;
-      const nextMeal = allMeals[nextIndex];
-      setCurrentIndex(nextIndex);
-      navigate(`/meal/${nextMeal.idMeal}`);
-    }
-  };
+  const handlePrevious = () => navigateToMeal('prev');
+  const handleNext = () => navigateToMeal('next');
+  const handleBackToHome = () => navigate('/');
 
-  const getIngredients = (meal: Meal): Array<{ingredient: string, measure: string}> => {
+  const getIngredients = (meal: Meal) => {
     const ingredients: Array<{ingredient: string, measure: string}> = [];
     
     for (let i = 1; i <= 20; i++) {
@@ -98,7 +94,7 @@ const MealDetail: React.FC = () => {
         <p>{error}</p>
         <button 
           className={styles.backButton}
-          onClick={() => navigate('/')}
+          onClick={handleBackToHome}
         >
           Back to Home
         </button>
@@ -112,7 +108,7 @@ const MealDetail: React.FC = () => {
         <p>Meal not found</p>
         <button 
           className={styles.backButton}
-          onClick={() => navigate('/')}
+          onClick={handleBackToHome}
         >
           Back to Home
         </button>
@@ -128,7 +124,7 @@ const MealDetail: React.FC = () => {
       <div className={styles.header}>
         <button 
           className={styles.backButton}
-          onClick={() => navigate('/')}
+          onClick={handleBackToHome}
         >
           ← Back
         </button>
