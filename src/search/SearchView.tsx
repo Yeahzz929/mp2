@@ -19,26 +19,69 @@ const SearchView: React.FC<SearchViewProps> = ({ searchQuery = '' }) => {
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const navigate = useNavigate();
 
-  // 页面加载时获取默认菜品
   useEffect(() => {
     const loadDefaultMeals = async () => {
       setLoading(true);
       try {
-        // 获取一些随机菜品作为默认显示
-        const randomMeals = await Promise.all([
-          mealApi.getRandomMeal(),
-          mealApi.getRandomMeal(),
-          mealApi.getRandomMeal(),
-          mealApi.getRandomMeal(),
+        // 使用不同的方法获取多样化的菜品
+        const [randomMeal1, randomMeal2, randomMeal3, randomMeal4] = await Promise.all([
           mealApi.getRandomMeal(),
           mealApi.getRandomMeal(),
           mealApi.getRandomMeal(),
           mealApi.getRandomMeal(),
         ]);
-        const validMeals = randomMeals.filter(meal => meal !== null) as Meal[];
-        setMeals(validMeals);
+        
+            // 获取一些按分类的菜品来增加多样性
+            const [beefMeals, chickenMeals, dessertMeals] = await Promise.all([
+              mealApi.filterByCategory('Beef'),
+              mealApi.filterByCategory('Chicken'),
+              mealApi.filterByCategory('Dessert'),
+            ]);
+            
+            // 为分类筛选的菜品获取完整信息
+            const beefDetails = await Promise.all(
+              beefMeals.slice(0, 2).map(meal => mealApi.getMealById(meal.idMeal))
+            );
+            const chickenDetails = await Promise.all(
+              chickenMeals.slice(0, 2).map(meal => mealApi.getMealById(meal.idMeal))
+            );
+            const dessertDetails = await Promise.all(
+              dessertMeals.slice(0, 2).map(meal => mealApi.getMealById(meal.idMeal))
+            );
+            
+            // 合并所有菜品并去重
+            const allMeals = [
+              randomMeal1,
+              randomMeal2,
+              randomMeal3,
+              randomMeal4,
+              ...beefDetails.filter(meal => meal !== null),
+              ...chickenDetails.filter(meal => meal !== null),
+              ...dessertDetails.filter(meal => meal !== null),
+            ].filter(meal => meal !== null) as Meal[];
+        
+        // 去重：基于idMeal去重
+        const uniqueMeals = allMeals.filter((meal, index, self) => 
+          index === self.findIndex(m => m.idMeal === meal.idMeal)
+        );
+        
+        // 取前8个
+        setMeals(uniqueMeals.slice(0, 8));
       } catch (err) {
         console.error('Error loading default meals:', err);
+        // 如果出错，至少尝试获取一些随机菜品
+        try {
+          const fallbackMeals = await Promise.all([
+            mealApi.getRandomMeal(),
+            mealApi.getRandomMeal(),
+            mealApi.getRandomMeal(),
+            mealApi.getRandomMeal(),
+          ]);
+          const validMeals = fallbackMeals.filter(meal => meal !== null) as Meal[];
+          setMeals(validMeals);
+        } catch (fallbackErr) {
+          console.error('Fallback loading failed:', fallbackErr);
+        }
       } finally {
         setLoading(false);
       }
@@ -47,30 +90,73 @@ const SearchView: React.FC<SearchViewProps> = ({ searchQuery = '' }) => {
     loadDefaultMeals();
   }, []);
 
-  // 防抖搜索
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (query.trim()) {
         searchMeals(query);
       } else if (query === '') {
-        // 如果搜索框为空，重新加载默认菜品
         const loadDefaultMeals = async () => {
           setLoading(true);
           try {
-            const randomMeals = await Promise.all([
-              mealApi.getRandomMeal(),
-              mealApi.getRandomMeal(),
-              mealApi.getRandomMeal(),
-              mealApi.getRandomMeal(),
+            // 使用不同的方法获取多样化的菜品
+            const [randomMeal1, randomMeal2, randomMeal3, randomMeal4] = await Promise.all([
               mealApi.getRandomMeal(),
               mealApi.getRandomMeal(),
               mealApi.getRandomMeal(),
               mealApi.getRandomMeal(),
             ]);
-            const validMeals = randomMeals.filter(meal => meal !== null) as Meal[];
-            setMeals(validMeals);
+            
+            // 获取一些按分类的菜品来增加多样性
+            const [beefMeals, chickenMeals, dessertMeals] = await Promise.all([
+              mealApi.filterByCategory('Beef'),
+              mealApi.filterByCategory('Chicken'),
+              mealApi.filterByCategory('Dessert'),
+            ]);
+            
+            // 为分类筛选的菜品获取完整信息
+            const beefDetails = await Promise.all(
+              beefMeals.slice(0, 2).map(meal => mealApi.getMealById(meal.idMeal))
+            );
+            const chickenDetails = await Promise.all(
+              chickenMeals.slice(0, 2).map(meal => mealApi.getMealById(meal.idMeal))
+            );
+            const dessertDetails = await Promise.all(
+              dessertMeals.slice(0, 2).map(meal => mealApi.getMealById(meal.idMeal))
+            );
+            
+            // 合并所有菜品并去重
+            const allMeals = [
+              randomMeal1,
+              randomMeal2,
+              randomMeal3,
+              randomMeal4,
+              ...beefDetails.filter(meal => meal !== null),
+              ...chickenDetails.filter(meal => meal !== null),
+              ...dessertDetails.filter(meal => meal !== null),
+            ].filter(meal => meal !== null) as Meal[];
+            
+            // 去重：基于idMeal去重
+            const uniqueMeals = allMeals.filter((meal, index, self) => 
+              index === self.findIndex(m => m.idMeal === meal.idMeal)
+            );
+            
+            // 取前8个
+            setMeals(uniqueMeals.slice(0, 8));
           } catch (err) {
             console.error('Error loading default meals:', err);
+            // 如果出错，至少尝试获取一些随机菜品
+            try {
+              const fallbackMeals = await Promise.all([
+                mealApi.getRandomMeal(),
+                mealApi.getRandomMeal(),
+                mealApi.getRandomMeal(),
+                mealApi.getRandomMeal(),
+              ]);
+              const validMeals = fallbackMeals.filter(meal => meal !== null) as Meal[];
+              setMeals(validMeals);
+            } catch (fallbackErr) {
+              console.error('Fallback loading failed:', fallbackErr);
+            }
           } finally {
             setLoading(false);
           }
@@ -96,7 +182,6 @@ const SearchView: React.FC<SearchViewProps> = ({ searchQuery = '' }) => {
     }
   };
 
-  // 排序逻辑
   const sortedMeals = useMemo(() => {
     return [...meals].sort((a, b) => {
       const aValue = a[sortField] || '';

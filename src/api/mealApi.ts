@@ -11,13 +11,11 @@ import {
 
 const API_BASE_URL = 'https://www.themealdb.com/api/json/v1/1';
 
-// 创建 axios 实例
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
 });
 
-// 请求拦截器
 api.interceptors.request.use(
   (config) => {
     return config;
@@ -27,7 +25,6 @@ api.interceptors.request.use(
   }
 );
 
-// 响应拦截器
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -39,7 +36,6 @@ api.interceptors.response.use(
 );
 
 export const mealApi = {
-  // 搜索餐点
   searchMeals: async (query: string): Promise<Meal[]> => {
     try {
       const response = await api.get<MealSearchResponse>(`/search.php?s=${encodeURIComponent(query)}`);
@@ -50,7 +46,6 @@ export const mealApi = {
     }
   },
 
-  // 按首字母搜索餐点
   searchMealsByFirstLetter: async (letter: string): Promise<Meal[]> => {
     try {
       const response = await api.get<MealSearchResponse>(`/search.php?f=${letter}`);
@@ -61,7 +56,6 @@ export const mealApi = {
     }
   },
 
-  // 获取餐点详情
   getMealById: async (id: string): Promise<Meal | null> => {
     try {
       const response = await api.get<MealSearchResponse>(`/lookup.php?i=${id}`);
@@ -72,7 +66,6 @@ export const mealApi = {
     }
   },
 
-  // 获取随机餐点
   getRandomMeal: async (): Promise<Meal | null> => {
     try {
       const response = await api.get<RandomMealResponse>('/random.php');
@@ -83,7 +76,6 @@ export const mealApi = {
     }
   },
 
-  // 获取所有分类
   getCategories: async (): Promise<any[]> => {
     try {
       const response = await api.get<CategoriesResponse>('/categories.php');
@@ -94,7 +86,6 @@ export const mealApi = {
     }
   },
 
-  // 获取所有地区
   getAreas: async (): Promise<string[]> => {
     try {
       const response = await api.get<AreasResponse>('/list.php?a=list');
@@ -105,7 +96,6 @@ export const mealApi = {
     }
   },
 
-  // 获取所有食材
   getIngredients: async (): Promise<string[]> => {
     try {
       const response = await api.get<IngredientsResponse>('/list.php?i=list');
@@ -116,7 +106,6 @@ export const mealApi = {
     }
   },
 
-  // 按分类筛选餐点
   filterByCategory: async (category: string): Promise<Meal[]> => {
     try {
       const response = await api.get<MealFilterResponse>(`/filter.php?c=${encodeURIComponent(category)}`);
@@ -127,7 +116,6 @@ export const mealApi = {
     }
   },
 
-  // 按地区筛选餐点
   filterByArea: async (area: string): Promise<Meal[]> => {
     try {
       const response = await api.get<MealFilterResponse>(`/filter.php?a=${encodeURIComponent(area)}`);
@@ -138,7 +126,6 @@ export const mealApi = {
     }
   },
 
-  // 按食材筛选餐点
   filterByIngredient: async (ingredient: string): Promise<Meal[]> => {
     try {
       const response = await api.get<MealFilterResponse>(`/filter.php?i=${encodeURIComponent(ingredient)}`);

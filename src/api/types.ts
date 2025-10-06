@@ -1,10 +1,8 @@
-// 食材和用量接口
 export interface IngredientMeasure {
   ingredient: string;
   measure: string;
 }
 
-// 简化的Meal接口
 export interface Meal {
   idMeal: string;
   strMeal: string;
@@ -20,7 +18,6 @@ export interface Meal {
   strCreativeCommonsConfirmed?: string;
   dateModified?: string;
   
-  // 动态食材和用量字段（用于API原始数据）
   [key: `strIngredient${number}`]: string | undefined;
   [key: `strMeasure${number}`]: string | undefined;
 }

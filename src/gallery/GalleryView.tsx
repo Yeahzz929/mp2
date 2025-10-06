@@ -14,7 +14,6 @@ const GalleryView: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 加载分类和地区数据
     const loadFilterData = async () => {
       try {
         const [categoriesData, areasData] = await Promise.all([
@@ -39,7 +38,6 @@ const GalleryView: React.FC = () => {
     try {
       let allMeals: Meal[] = [];
       
-      // 如果没有选择任何筛选条件，加载随机餐点
       if (selectedCategories.length === 0 && selectedAreas.length === 0) {
         const randomMeals = await Promise.all([
           mealApi.getRandomMeal(),
@@ -53,14 +51,11 @@ const GalleryView: React.FC = () => {
         ]);
         allMeals = randomMeals.filter(meal => meal !== null) as Meal[];
       } else {
-        // 简化筛选逻辑：优先使用分类筛选，如果同时选择了地区，则进行客户端筛选
         if (selectedCategories.length > 0) {
-          // 使用第一个选中的分类进行API筛选
           const category = selectedCategories[0];
           const meals = await mealApi.filterByCategory(category);
           
           if (meals.length > 0) {
-            // 获取完整详情
             const detailedMeals = await Promise.all(
               meals.map(async (meal: Meal) => {
                 const fullMeal = await mealApi.getMealById(meal.idMeal);
@@ -70,7 +65,6 @@ const GalleryView: React.FC = () => {
             
             allMeals = detailedMeals;
             
-            // 如果还选择了地区，进行客户端筛选
             if (selectedAreas.length > 0) {
               allMeals = allMeals.filter(meal => 
                 selectedAreas.includes(meal.strArea)
@@ -78,12 +72,10 @@ const GalleryView: React.FC = () => {
             }
           }
         } else if (selectedAreas.length > 0) {
-          // 只按地区筛选
           const area = selectedAreas[0];
           const meals = await mealApi.filterByArea(area);
           
           if (meals.length > 0) {
-            // 获取完整详情
             const detailedMeals = await Promise.all(
               meals.map(async (meal: Meal) => {
                 const fullMeal = await mealApi.getMealById(meal.idMeal);
@@ -96,7 +88,6 @@ const GalleryView: React.FC = () => {
         }
       }
       
-      // 确保总是设置结果，即使为空
       setMeals(allMeals);
     } catch (err) {
       setError('Filter failed, please try again later');
@@ -107,7 +98,6 @@ const GalleryView: React.FC = () => {
   }, [selectedCategories, selectedAreas]);
 
   useEffect(() => {
-    // 添加防抖，避免频繁调用
     const timeoutId = setTimeout(() => {
       loadMealsByFilters();
     }, 300);
@@ -140,7 +130,6 @@ const GalleryView: React.FC = () => {
     navigate(`/meal/${meal.idMeal}`);
   };
 
-  // 直接使用 meals，因为筛选逻辑已经在 loadMealsByFilters 中处理了
   const filteredMeals = meals;
 
   return (

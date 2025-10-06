@@ -162,7 +162,6 @@
   gap: 20px;
 }
 
-/* 响应式网格布局 */
 .gridView {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
@@ -171,7 +170,6 @@
   grid-template-columns: 1fr;
 }
 
-/* 不同屏幕尺寸的列数调整 */
 @media (min-width: 1200px) {
   .gridView {
     grid-template-columns: repeat(4, 1fr);
