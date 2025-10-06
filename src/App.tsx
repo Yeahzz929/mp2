@@ -1,25 +1,26 @@
 import React from 'react';
-import logo from './logo.svg';
+import { Routes, Route } from 'react-router-dom';
+import 'normalize.css';
+import { ErrorBoundary, Navigation } from './common/index';
+import SearchView from './search/index';
+import GalleryView from './gallery/index';
+import MealDetail from './meal/index';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ErrorBoundary>
+      <div className="App">
+        <Navigation />
+        <main>
+          <Routes>
+            <Route path="/" element={<SearchView />} />
+            <Route path="/gallery" element={<GalleryView />} />
+            <Route path="/meal/:id" element={<MealDetail />} />
+          </Routes>
+        </main>
+      </div>
+    </ErrorBoundary>
   );
 }
 
